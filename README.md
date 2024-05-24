@@ -21,20 +21,20 @@ $ make up
 
 
 etc. docker container 말고 intellij에서 구동하고 싶을때
-```aidl
+```
 1. docker container 에서 데이터 베이스를 제외한 애플리케이션 컨테이너 삭제
 2. intellij 에서 run
 3. 이후 테스트
 ```
 
 주의사항
-```aidl
+```
 db 데이터가 로컬에 저장되고, 초기 빌드 후 계속 해당 데이터를 참조하기 때문에
 db 스키가마 변경되거나 하는 경우는 로컬 데이터를 삭제해야합니다.
 $ make down
 $ make up
 ```
-```aidl
+```
 애플리케이션도 마찬가지로 이미지를 빌드 한뒤 사용하는 것이기 때문에,
 bootJar 명령어로 jar 파일을 만든 뒤, 이미지를 빌드해서 써야 반영됩니다.
 ```
