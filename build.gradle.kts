@@ -9,7 +9,7 @@ plugins {
     kotlin("kapt") version "1.7.10"
 }
 
-group = "com.catched"
+group = "com.catches"
 version = "0.0.1-SNAPSHOT"
 
 java {
