@@ -1,0 +1,45 @@
+services:
+  database-mysql:
+    image: mysql:5.7.34
+    ports:
+      - 3306:3306
+    volumes:
+      - ./db/mysql/data:/var/lib/mysql
+      - ./src/test/resources/db/init:/docker-entrypoint-initdb.d
+    command:
+      - '--character-set-server=utf8mb4'
+      - '--collation-server=utf8mb4_unicode_ci'
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_ROOT_HOST: '%'
+      MYSQL_DATABASE: securities_info
+    platform: linux/amd64
+    restart: always
+
+  #  redis:
+  #    image: redis:latest
+  #    command: redis-server
+  #    labels:
+  #      - "name=redis"
+  #      - "mode=standalone"
+  #    ports:
+  #      - 6379:6379
+
+  app:
+    container_name: securities_batch
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - database-mysql
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://database-mysql:3306/securities_info?useSSL=false&allowPublicKeyRetrieval=true
+      SPRING_DATASOURCE_DRIVER: com.mysql.cj.jdbc.Driver
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: root
+      SPRING_JPA_DATABASE_PLATFORM: org.hibernate.dialect.MySQLDialect
+  #      SPRING_REDIS_HOST: redis
+  #      SPRING_REDIS_PORT: 6379
+  #    command: ./gradlew bootRun
