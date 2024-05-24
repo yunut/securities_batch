@@ -11,9 +11,10 @@
 https://www.docker.com/products/docker-desktop/
 ```
 
-2. gradle 빌드
+2. 프로젝트 실행
 ```aidl
-.gradlew build
+$ ./gradlew clean build
+$ make up
 ```
 
 3. docker desktop에 컨테이너가 잘 동작되었는지 확인
@@ -23,4 +24,5 @@ etc. docker container 말고 intellij에서 구동하고 싶을때
 ```aidl
 1. docker container 에서 데이터 베이스를 제외한 애플리케이션 컨테이너 삭제
 2. intellij 에서 run
+3. 이후 테스트
 ```
