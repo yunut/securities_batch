@@ -3,6 +3,8 @@
 
 해당 레포지토리는 주식, 채권 정보를 얻어와 저장하는 batch 레포지토리
 
+https://vine-honesty-22f.notion.site/13ef77777eef4cd5a2d917064fd28f7d?pvs=4
+
 ## 실행방법
 
 1. docker 설치
