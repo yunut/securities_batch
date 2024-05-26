@@ -6,13 +6,13 @@
 ## 실행방법
 
 1. docker 설치
-```aidl
+```
 아래 홈페이지 에서 docker desktop 설치
 https://www.docker.com/products/docker-desktop/
 ```
 
 2. 프로젝트 실행
-```aidl
+```
 $ ./gradlew bootJar
 $ make up
 ```
@@ -30,11 +30,15 @@ etc. docker container 말고 intellij에서 구동하고 싶을때
 주의사항
 ```
 db 데이터가 로컬에 저장되고, 초기 빌드 후 계속 해당 데이터를 참조하기 때문에
-db 스키가마 변경되거나 하는 경우는 로컬 데이터를 삭제해야합니다.
+db 스키마가 변경되거나 하는 경우는 로컬 데이터를 삭제해야합니다.
 $ make down
 $ make up
 ```
 ```
 애플리케이션도 마찬가지로 이미지를 빌드 한뒤 사용하는 것이기 때문에,
-bootJar 명령어로 jar 파일을 만든 뒤, 이미지를 빌드해서 써야 반영됩니다.
+jar 파일을 만든 뒤, 이미지를 재빌드해서 써야합니다.
+$ ./gradlew build
+$ ./gradlew bootJar
+$ make build
+% make up
 ```
