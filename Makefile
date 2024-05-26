@@ -4,7 +4,7 @@ shell:
 shell-mysql:
 	docker-compose exec database-mysql mysql -uroot -proot
 
-build: clean
+build:
 	docker-compose build
 
 up:

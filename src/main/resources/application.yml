@@ -3,6 +3,13 @@ spring:
     properties:
       hibernate:
         dialect: org.hibernate.dialect.MySQLDialect
+      # TODO 아래 내용이 없어도 될텐데.. 이상하게 없으면 테스트 케이스 빌드가 안됨.. 확인 후 제거 필요
+      datasource:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        url: jdbc:mysql://localhost:3306/securities_info
+        username: root
+        password: root
+
 logging:
   level:
     root: debug
