@@ -1,11 +1,15 @@
 package com.catches.securities_batch.http.dto
 
+import kotlinx.serialization.Serializable
+
+@Serializable
 data class BondInformationResponse(
     val numOfRows: Int,
     val pageNo: Int,
     val totalCount: Int,
-    val items: List<BondInformationDto>
+    val items: List<BondInformationDto>,
 )
+
 data class BondInformationDto(
     val basDt: String, // 기준일자 (필수)
     val crno: String, // 법인등록번호 (필수)
@@ -25,5 +29,5 @@ data class BondInformationDto(
     val irtChngDcd: String?, // 금리변동구분코드 (옵션)
     val irtChngDcdNm: String?, // 금리변동구분코드명 (옵션)
     val bondIntTcd: String?, // 채권이자유형코드 (옵션)
-    val bondIntTcdNm: String? // 채권이자유형코드명 (옵션)
+    val bondIntTcdNm: String?, // 채권이자유형코드명 (옵션)
 )

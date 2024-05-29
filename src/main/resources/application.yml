@@ -14,6 +14,8 @@ logging:
   level:
     root: debug
 
-api:
-  data:
-    key: "l8DcvgGgm77mgVdHP4xMbgBY6GigF%2BEPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi%2FRfhTZwsp1OQg%3D%3D"
+http:
+  data-go-kr:
+    key: "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg=="
+    scheme: "http"
+    host: "apis.data.go.kr"

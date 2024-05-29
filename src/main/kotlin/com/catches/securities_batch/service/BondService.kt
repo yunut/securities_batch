@@ -1,16 +1,19 @@
 package com.catches.securities_batch.service
 
-import com.catches.securities_batch.http.`interface`.BondApiInterface
+import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
-import retrofit2.Retrofit
 
 @Service
 class BondService(
-    final val retrofit: Retrofit
+    @Qualifier("DataGoKrApiInterface") private val dataGoKrApiInterface: DataGoKrApiInterface,
 ) {
-    private val testService = retrofit.create(BondApiInterface::class.java)
-
     fun getBondInformation() {
-        testService.getBondInformation(pageNo = 1, numOfRows = 1)
+        dataGoKrApiInterface.getBondInformation(
+            serviceKey = "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg==",
+            pageNo = 1,
+            numOfRows = 1,
+            resultType = "json",
+        ).execute()
     }
 }

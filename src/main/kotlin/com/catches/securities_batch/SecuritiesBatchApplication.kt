@@ -1,13 +1,14 @@
 package com.catches.securities_batch
 
-import com.catches.securities_batch.http.property.ApiProperty
+import com.catches.securities_batch.properties.HttpProperty
 import org.springframework.boot.autoconfigure.SpringBootApplication
-import org.springframework.boot.context.properties.ConfigurationPropertiesScan
 import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.runApplication
 
 @SpringBootApplication
-@EnableConfigurationProperties(ApiProperty::class)
+@EnableConfigurationProperties(
+    HttpProperty::class,
+)
 class SecuritiesBatchApplication
 
 fun main(args: Array<String>) {
