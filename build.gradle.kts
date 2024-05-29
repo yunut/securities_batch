@@ -7,6 +7,7 @@ plugins {
     kotlin("plugin.spring") version "1.9.24"
 
     kotlin("kapt") version "1.7.10"
+    kotlin("plugin.serialization") version "1.6.21"
 }
 
 group = "com.catches"
@@ -68,6 +69,7 @@ dependencies {
     implementation("com.jakewharton.retrofit:retrofit2-kotlinx-serialization-converter:0.8.0")
     implementation("com.squareup.okhttp3:logging-interceptor")
     implementation("com.squareup.retrofit2:converter-scalars:2.9.0")
+
 }
 
 tasks.withType<KotlinCompile> {

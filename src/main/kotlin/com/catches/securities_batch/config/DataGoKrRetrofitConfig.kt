@@ -1,5 +1,6 @@
 package com.catches.securities_batch.config
 
+import com.catches.securities_batch.common.JsonConfig
 import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
 import com.catches.securities_batch.properties.HttpProperty
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
@@ -29,10 +30,13 @@ class DataGoKrRetrofitConfig(
 
         val connectionPool = ConnectionPool(10, 5, TimeUnit.MINUTES)
         val client =
-            OkHttpClient.Builder().connectionPool(connectionPool).callTimeout(Duration.ofMinutes(10)).writeTimeout(
-                Duration.ofMinutes(10),
-            )
-                .connectTimeout(Duration.ofMinutes(10)).readTimeout(Duration.ofMinutes(10)).addInterceptor(interceptor)
+            OkHttpClient.Builder()
+                .connectionPool(connectionPool)
+                .callTimeout(Duration.ofMinutes(10))
+                .writeTimeout(Duration.ofMinutes(10))
+                .connectTimeout(Duration.ofMinutes(10))
+                .readTimeout(Duration.ofMinutes(10))
+                .addInterceptor(interceptor)
                 .addInterceptor(
                     (
                         { chain ->
@@ -43,16 +47,16 @@ class DataGoKrRetrofitConfig(
                             chain.proceed(request)
                         }
                     ),
-                ).build()
+                )
+                .build()
 
         return Retrofit.Builder().baseUrl(
-            HttpUrl.Builder().scheme(httpProperty.dataGoKr.scheme).host(httpProperty.dataGoKr.host).build(),
-        ).client(client).addConverterFactory(
-            Json {
-                isLenient = true
-                ignoreUnknownKeys = true
-                coerceInputValues = true
-            }.asConverterFactory("application/json".toMediaTypeOrNull()!!),
-        ).build().create(DataGoKrApiInterface::class.java)
+            HttpUrl.Builder()
+                .scheme(httpProperty.dataGoKr.scheme).host(httpProperty.dataGoKr.host)
+                .build())
+            .client(client)
+            .addConverterFactory(JsonConfig.jsonRetrofit.asConverterFactory("application/json".toMediaTypeOrNull()!!))
+            .build()
+            .create(DataGoKrApiInterface::class.java)
     }
 }

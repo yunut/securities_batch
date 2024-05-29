@@ -9,7 +9,7 @@ class BondService(
     @Qualifier("DataGoKrApiInterface") private val dataGoKrApiInterface: DataGoKrApiInterface,
 ) {
     fun getBondInformation() {
-        dataGoKrApiInterface.getBondInformation(
+        val temp = dataGoKrApiInterface.getBondInformation(
             serviceKey = "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg==",
             pageNo = 1,
             numOfRows = 1,
