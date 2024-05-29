@@ -31,6 +31,7 @@ class RetrofitConfig() {
             .build()
 
         return Retrofit.Builder()
+            .baseUrl("http://apis.data.go.kr/")
             .client(client)
             .addConverterFactory(Json.asConverterFactory("application/json".toMediaTypeOrNull()!!))
             .build()

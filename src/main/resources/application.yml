@@ -13,3 +13,7 @@ spring:
 logging:
   level:
     root: debug
+
+api:
+  data:
+    key: "l8DcvgGgm77mgVdHP4xMbgBY6GigF%2BEPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi%2FRfhTZwsp1OQg%3D%3D"
