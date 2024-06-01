@@ -13,5 +13,6 @@ interface DataGoKrApiInterface {
         @Query("pageNo") pageNo: Int,
         @Query("numOfRows") numOfRows: Int,
         @Query("resultType") resultType: String,
+        @Query("basDt") basDt: String,
     ): Call<BondInformationResponse>
 }
