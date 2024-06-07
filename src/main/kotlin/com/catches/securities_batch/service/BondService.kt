@@ -82,7 +82,7 @@ class BondService(
                 issueDate = LocalDate.parse(bondItem.bondIssuDt, formatter),
                 securitiesItemKind = kind,
                 isinCode = bondItem.isinCd,
-                isinCodeName = bondItem.isinCdNm.trim(),
+                isinCodeName = bondItem.isinCdNm.replace(" ", ""),
                 issueFormatName = bondItem.bondIssuFrmtNm,
                 expiredDate = LocalDate.parse(bondItem.bondExprDt, formatter),
                 issueCurrencyCode = bondItem.bondIssuCurCd,

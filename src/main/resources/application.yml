@@ -21,6 +21,6 @@ logging:
 
 http:
   data-go-kr:
-    key: "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg=="
+    key: ${DATAGOKR_KEY}
     scheme: "http"
     host: "apis.data.go.kr"

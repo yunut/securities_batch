@@ -10,7 +10,7 @@ import org.springframework.batch.item.ItemWriter
 import org.springframework.stereotype.Component
 
 @Component
-class BondItemWriter(
+class BondInformationItemWriter(
     private val bondService: BondService,
     private val bondRepository: BondRepository
 ) : ItemWriter<BondInformationDto> {
