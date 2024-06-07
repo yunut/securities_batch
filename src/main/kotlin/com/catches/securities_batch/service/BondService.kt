@@ -1,9 +1,9 @@
 package com.catches.securities_batch.service
 
-import com.catches.securities_batch.http.dto.BondItem
+import com.catches.securities_batch.http.dto.BondInformationDto
 import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
 import com.catches.securities_batch.repository.*
-import com.catches.securities_batch.repository.dto.*
+import com.catches.securities_batch.repository.entity.*
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Service
@@ -20,6 +20,7 @@ class BondService(
     private val bondInterestTypeRepository: BondInterestTypeRepository,
     private val bondSecuritiesItemKindRepository: BondSecuritiesItemKindRepository
 ) {
+    val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     fun getBondInformation(pageNo: Int, rows: Int) {
         val temp = dataGoKrApiInterface.getBondInformation(
             serviceKey = "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg==",
@@ -29,40 +30,66 @@ class BondService(
             basDt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
         ).execute().body()
 
-        println(temp?.response?.body?.items?.item?.size)
-
         temp?.response?.body?.items?.item?.forEach {
-            bondIssuerRepository.save(BondIssuer(name = it.bondIsurNm, crno = it.crno))
-            bondInterestChangeRepository.save(BondInterestChange(code = it.irtChngDcd, name = it.irtChngDcdNm))
-            bondInterestTypeRepository.save(BondInterestType(code = it.bondIntTcd, name = it.bondIntTcdNm))
-            bondSecuritiesItemKindRepository.save(BondSecuritiesItemKind(code = it.scrsItmsKcd, name = it.scrsItmsKcdNm))
-            saveBondInformation(it)
+            val bond = bondRepository.findBondByIsinCode(it.isinCd)
+            bond ?: saveBondInformation(it)
         }
     }
 
-    @Transactional
-    fun saveBondInformation(bondItem: BondItem) {
-        val bondInformation = bondItem.toBond()
-        bondRepository.save(bondInformation)
+    fun getBondPrice(pageNo: Int, rows: Int) {
+        val temp = dataGoKrApiInterface.getBondPrice(
+            serviceKey = "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg==",
+            pageNo = pageNo,
+            numOfRows = rows,
+            resultType = "json",
+            beginBasDt = "20240101"
+        ).execute().body()
+
+        temp?.response?.body?.items?.item?.forEach {
+            val bond = bondRepository.findBondByIsinCode(it.isinCd)
+            val pricedDate = LocalDate.parse(it.basDt, formatter)
+
+            bond?.let { item ->
+                if (item.pricedDate == null || item.pricedDate!!.isBefore(pricedDate)) {
+                    bondRepository.updateBondPrice(isinCode = it.isinCd, price = it.clprPrc, pricedDate = pricedDate)
+                }
+            }
+        }
     }
 
-    fun BondItem.toBond(): Bond {
-        val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
+    fun saveBondInformation(bondItem: BondInformationDto) {
+        val issuer = bondIssuerRepository.findBondIssuerByName(bondItem.bondIsurNm)
+            ?: BondIssuer(bondItem.bondIsurNm, bondItem.crno).apply {
+                bondIssuerRepository.save(this)
+            }
+        val change = bondInterestChangeRepository.findBondInterestChangeByCode(bondItem.irtChngDcd)
+            ?: BondInterestChange(bondItem.irtChngDcd, bondItem.irtChngDcdNm).apply {
+                bondInterestChangeRepository.save(this)
+            }
+        val type = bondInterestTypeRepository.findBondInterestTypeByCode(bondItem.bondIntTcd)
+            ?: BondInterestType(bondItem.bondIntTcd, bondItem.bondIntTcdNm).apply {
+                bondInterestTypeRepository.save(this)
+            }
+        val kind = bondSecuritiesItemKindRepository.findBondSecuritiesItemKindByCode(bondItem.scrsItmsKcd)
+            ?: BondSecuritiesItemKind(bondItem.scrsItmsKcd, bondItem.scrsItmsKcdNm).apply {
+                bondSecuritiesItemKindRepository.save(this)
+            }
 
-        return Bond(
-            crno = this.crno,
-            issuerName = this.bondIsurNm,
-            issueDate = LocalDate.parse(this.bondIssuDt, formatter),
-            securitiesItemKindCode = this.scrsItmsKcd,
-            isinCode = this.isinCd,
-            isinCodeName = this.isinCdNm,
-            issueFormatName = this.bondIssuFrmtNm,
-            expiredDate = LocalDate.parse(this.bondExprDt, formatter),
-            issueCurrencyCode = this.bondIssuCurCd,
-            surfaceInterestRate = BigDecimal(this.bondSrfcInrt),
-            interestChangeCode = this.irtChngDcd,
-            interestTypeCode = this.bondIntTcd,
-            price = null
+        bondRepository.save(
+            Bond.toBond(
+                crno = bondItem.crno,
+                issuer = issuer,
+                issueDate = LocalDate.parse(bondItem.bondIssuDt, formatter),
+                securitiesItemKind = kind,
+                isinCode = bondItem.isinCd,
+                isinCodeName = bondItem.isinCdNm.trim(),
+                issueFormatName = bondItem.bondIssuFrmtNm,
+                expiredDate = LocalDate.parse(bondItem.bondExprDt, formatter),
+                issueCurrencyCode = bondItem.bondIssuCurCd,
+                surfaceInterestRate = bondItem.bondSrfcInrt.toBigDecimal(),
+                interestChange = change,
+                interestType = type
+            )
         )
     }
 }

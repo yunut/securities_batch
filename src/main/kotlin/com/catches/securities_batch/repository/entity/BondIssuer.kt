@@ -1,4 +1,4 @@
-package com.catches.securities_batch.repository.dto
+package com.catches.securities_batch.repository.entity
 
 import jakarta.persistence.*
 

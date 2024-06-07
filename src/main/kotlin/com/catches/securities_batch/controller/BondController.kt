@@ -21,4 +21,15 @@ class BondController(
 
         return "test success"
     }
+
+    @ResponseStatus(HttpStatus.OK)
+    @GetMapping("/test2")
+    fun test2(
+        @RequestParam pageNo: Int,
+        @RequestParam rows: Int
+    ): String {
+        bondService.getBondPrice(pageNo, rows)
+
+        return "test success"
+    }
 }
