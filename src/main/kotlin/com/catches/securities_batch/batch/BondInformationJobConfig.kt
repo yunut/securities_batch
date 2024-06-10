@@ -2,6 +2,7 @@ package com.catches.securities_batch.batch
 
 import com.catches.securities_batch.http.dto.BondInformationDto
 import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
+import com.catches.securities_batch.properties.HttpProperty
 import com.catches.securities_batch.repository.BondRepository
 import com.catches.securities_batch.service.BondService
 import org.springframework.context.annotation.Bean
@@ -25,7 +26,8 @@ import org.springframework.transaction.PlatformTransactionManager
 class BondInformationJobConfig(
     @Qualifier("DataGoKrApiInterface") private val dataGoKrApiInterface: DataGoKrApiInterface,
     private val bondService: BondService,
-    private val bondRepository: BondRepository
+    private val bondRepository: BondRepository,
+    private val httpProperty: HttpProperty
 ): DefaultBatchConfiguration() {
     val chunkSize = 10
 
@@ -49,7 +51,7 @@ class BondInformationJobConfig(
     @Bean
     @StepScope
     fun itemReader(): ItemReader<BondInformationDto> {
-        return BondItemReader(dataGoKrApiInterface)
+        return BondItemReader(dataGoKrApiInterface, httpProperty)
     }
 
     @Bean
