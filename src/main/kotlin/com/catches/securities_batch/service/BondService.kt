@@ -2,6 +2,7 @@ package com.catches.securities_batch.service
 
 import com.catches.securities_batch.http.dto.BondInformationDto
 import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
+import com.catches.securities_batch.properties.HttpProperty
 import com.catches.securities_batch.repository.*
 import com.catches.securities_batch.repository.entity.*
 import jakarta.transaction.Transactional
@@ -18,12 +19,13 @@ class BondService(
     private val bondIssuerRepository: BondIssuerRepository,
     private val bondInterestChangeRepository: BondInterestChangeRepository,
     private val bondInterestTypeRepository: BondInterestTypeRepository,
-    private val bondSecuritiesItemKindRepository: BondSecuritiesItemKindRepository
+    private val bondSecuritiesItemKindRepository: BondSecuritiesItemKindRepository,
+    private val httpProperty: HttpProperty
 ) {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
     fun getBondInformation(pageNo: Int, rows: Int) {
         val temp = dataGoKrApiInterface.getBondInformation(
-            serviceKey = "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg==",
+            serviceKey = httpProperty.dataGoKr.key,
             pageNo = pageNo,
             numOfRows = rows,
             resultType = "json",
@@ -38,7 +40,7 @@ class BondService(
 
     fun getBondPrice(pageNo: Int, rows: Int) {
         val temp = dataGoKrApiInterface.getBondPrice(
-            serviceKey = "l8DcvgGgm77mgVdHP4xMbgBY6GigF+EPEzhFwpNgFOZ7kZkrUtxbcMeBEkJmpLpSpDbnaiRVi/RfhTZwsp1OQg==",
+            serviceKey = httpProperty.dataGoKr.key,
             pageNo = pageNo,
             numOfRows = rows,
             resultType = "json",

@@ -35,7 +35,7 @@ class DataGoKrRetrofitConfig(
                 .callTimeout(Duration.ofMinutes(10))
                 .writeTimeout(Duration.ofMinutes(10))
                 .connectTimeout(Duration.ofMinutes(10))
-                .readTimeout(Duration.ofMinutes(10))
+                .readTimeout(Duration.ofSeconds(30))
                 .addInterceptor(interceptor)
                 .addInterceptor(
                     (

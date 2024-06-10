@@ -16,23 +16,21 @@ import org.springframework.batch.core.repository.JobRepository
 import org.springframework.batch.core.step.builder.StepBuilder
 import org.springframework.batch.item.ItemReader
 import org.springframework.batch.item.ItemWriter
+import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.beans.factory.annotation.Qualifier
-import org.springframework.context.annotation.Lazy
 import org.springframework.transaction.PlatformTransactionManager
 
 @Configuration
 @EnableBatchProcessing
 class BondInformationJobConfig(
     @Qualifier("DataGoKrApiInterface") private val dataGoKrApiInterface: DataGoKrApiInterface,
-//    private val jobRepository: JobRepository,
-//    private val transactionManager: PlatformTransactionManager,
     private val bondService: BondService,
     private val bondRepository: BondRepository
 ): DefaultBatchConfiguration() {
-    companion object { const val chunkSize = 10 }
+    val chunkSize = 10
 
     @Bean
-    fun bondInformationJob(jobRepository: JobRepository, step: Step): Job {
+    fun bondInformationJob(jobRepository: JobRepository, @Autowired step: Step): Job {
         return JobBuilder("bondInformationJob", jobRepository)
             .incrementer(RunIdIncrementer())
             .start(step)

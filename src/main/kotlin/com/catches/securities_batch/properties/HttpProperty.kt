@@ -2,7 +2,6 @@ package com.catches.securities_batch.properties
 
 import org.springframework.boot.context.properties.ConfigurationProperties
 
-// @ConstructorBinding
 @ConfigurationProperties(prefix = "http")
 data class HttpProperty(
     val dataGoKr: UrlEntity,
