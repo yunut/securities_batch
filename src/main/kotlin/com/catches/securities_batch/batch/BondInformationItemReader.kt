@@ -3,7 +3,6 @@ package com.catches.securities_batch.batch
 import com.catches.securities_batch.http.dto.BondInformationDto
 import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
 import com.catches.securities_batch.properties.HttpProperty
-//import com.catches.securities_batch.http.`interface`.DataGoKrApiInterface
 import org.springframework.batch.item.ItemReader
 import org.springframework.beans.factory.annotation.Qualifier
 import java.time.LocalDate
@@ -11,7 +10,7 @@ import java.time.format.DateTimeFormatter
 
 class BondInformationItemReader(
     @Qualifier("DataGoKrApiInterface") private val dataGoKrApiInterface: DataGoKrApiInterface,
-    val httpProperty: HttpProperty
+    private val httpProperty: HttpProperty
 ) : ItemReader<BondInformationDto> {
 
     private var bondList: List<BondInformationDto>? = null
