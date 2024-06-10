@@ -9,7 +9,18 @@ spring:
         url: jdbc:mysql://localhost:3306/securities_info
         username: root
         password: root
+  batch:
+    jdbc:
+      initialize-schema: always
+    job:
+      enabled: true
 
 logging:
   level:
     root: debug
+
+http:
+  data-go-kr:
+    key: ${DATAGOKR_KEY}
+    scheme: "http"
+    host: "apis.data.go.kr"
