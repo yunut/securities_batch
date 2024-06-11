@@ -16,7 +16,6 @@ class BatchScheduler(
     private val bondPriceJob: Job
 ) {
     @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽 2시에 실행
-//    @Scheduled(fixedDelay = 1000000)  // 매일 자정에 실행
     fun runBondInformationBatchJob() {
         val jobParameters = JobParametersBuilder()
             .addLong("time", System.currentTimeMillis())
@@ -30,7 +29,6 @@ class BatchScheduler(
         }
     }
 
-    @Scheduled(fixedDelay = 1000000)  // 매일 자정에 실행
     fun runBondPriceBatchJob() {
         val jobParameters = JobParametersBuilder()
             .addLong("time", System.currentTimeMillis())

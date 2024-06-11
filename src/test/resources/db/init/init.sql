@@ -113,16 +113,17 @@ CREATE TABLE bond_securities_item_kind (
 );
 
 CREATE TABLE bond_issuer (
-    name VARCHAR(100) PRIMARY KEY NOT NULL, -- 채권 발행인 명칭
-    crno VARCHAR(13) NOT NULL, -- 법인등록번호,
-    grade VARCHAR(5) -- 기업 신용등급
+    code VARCHAR(13) PRIMARY KEY NOT NULL, -- 법인등록번호,
+    name VARCHAR(100) NOT NULL, -- 채권 발행인 명칭
+    grade VARCHAR(5), -- 신용등급
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- 레코드 생성 시간
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL -- 레코드 업데이트 시간,-- 기업 신용등급
 );
 
 CREATE TABLE bond (
     isin_code VARCHAR(12) PRIMARY KEY NOT NULL, -- 국제 채권 식별 번호 (ISIN 코드)
     isin_code_name VARCHAR(100) NOT NULL, -- 국제 채권 식별 번호 명칭
-    crno VARCHAR(13), -- 법인등록번호
-    issuer_name VARCHAR(100) NOT NULL, -- 채권 발행인 명칭
+    issuer_code VARCHAR(13) NOT NULL, -- 발행인 법인등록번호
     issue_date DATE NOT NULL, -- 채권 발행 일자
     issue_format_name VARCHAR(100) NOT NULL, -- 채권 발행 형태 명칭
     surface_interest_rate DECIMAL(15,10) NOT NULL, -- 채권 표면 이자율
@@ -138,7 +139,7 @@ CREATE TABLE bond (
     FOREIGN KEY (securities_item_kind_code) REFERENCES bond_securities_item_kind(code),
     FOREIGN KEY (interest_change_code) REFERENCES bond_interest_change(code),
     FOREIGN KEY (interest_type_code) REFERENCES bond_interest_type(code),
-    FOREIGN KEY (issuer_name) REFERENCES bond_issuer(name)
+    FOREIGN KEY (issuer_code) REFERENCES bond_issuer(code)
 );
 
 CREATE TABLE bond_grade_rank (

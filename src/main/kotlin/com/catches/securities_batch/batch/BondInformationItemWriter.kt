@@ -15,13 +15,13 @@ class BondInformationItemWriter(
     override fun write(chunk: Chunk<out BondInformationDto>) {
         try {
             chunk.items.forEach {
-                val bond = bondRepository.findBondByIsinCode(it.isinCd)
-                bond ?: bondService.saveBondInformation(it)
+                if (it.crno != "0000000000000"){
+                    val bond = bondRepository.findBondByIsinCode(it.isinCd)
+                    bond ?: bondService.saveBondInformation(it)
+                }
             }
         } catch (e: Exception) {
             //TODO 채권 발행정보 write 이상시 처리
         }
-
-
     }
 }

@@ -15,12 +15,9 @@ data class Bond(
     @Column(name = "isin_code_name", length = 100, nullable = false)
     var isinCodeName: String,
 
-    @Column(name = "crno", length = 13)
-    var crno: String? = null,
-
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "issuer_name", nullable = false)
-    var issuer: BondIssuer,
+    @JoinColumn(name = "issuer_code", nullable = false)
+    var issuer_code: BondIssuer,
 
     @Column(name = "issue_date", nullable = false)
     var issueDate: LocalDate,
@@ -63,7 +60,6 @@ data class Bond(
 ) {
     companion object {
         fun toBond(
-            crno: String,
             issuer: BondIssuer,
             issueDate: LocalDate,
             securitiesItemKind: BondSecuritiesItemKind,
@@ -77,8 +73,7 @@ data class Bond(
             interestType: BondInterestType
         ): Bond {
             return Bond(
-                crno = crno,
-                issuer = issuer,
+                issuer_code = issuer,
                 issueDate = issueDate,
                 securitiesItemKind = securitiesItemKind,
                 isinCode = isinCode,

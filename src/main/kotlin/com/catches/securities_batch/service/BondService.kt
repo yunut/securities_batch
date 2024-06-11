@@ -61,9 +61,10 @@ class BondService(
 
     fun saveBondInformation(bondItem: BondInformationDto) {
         val issuer = bondIssuerRepository.findBondIssuerByName(bondItem.bondIsurNm)
-            ?: BondIssuer(bondItem.bondIsurNm, bondItem.crno).apply {
+            ?: BondIssuer(bondItem.crno, bondItem.bondIsurNm, null).apply {
                 bondIssuerRepository.save(this)
             }
+
         val change = bondInterestChangeRepository.findBondInterestChangeByCode(bondItem.irtChngDcd)
             ?: BondInterestChange(bondItem.irtChngDcd, bondItem.irtChngDcdNm).apply {
                 bondInterestChangeRepository.save(this)
@@ -79,7 +80,6 @@ class BondService(
 
         bondRepository.save(
             Bond.toBond(
-                crno = bondItem.crno,
                 issuer = issuer,
                 issueDate = LocalDate.parse(bondItem.bondIssuDt, formatter),
                 securitiesItemKind = kind,
