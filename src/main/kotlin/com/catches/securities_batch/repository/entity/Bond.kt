@@ -17,7 +17,7 @@ data class Bond(
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "issuer_code", nullable = false)
-    var issuer_code: BondIssuer,
+    var issuerCode: BondIssuer,
 
     @Column(name = "issue_date", nullable = false)
     var issueDate: LocalDate,
@@ -73,7 +73,7 @@ data class Bond(
             interestType: BondInterestType
         ): Bond {
             return Bond(
-                issuer_code = issuer,
+                issuerCode = issuer,
                 issueDate = issueDate,
                 securitiesItemKind = securitiesItemKind,
                 isinCode = isinCode,
