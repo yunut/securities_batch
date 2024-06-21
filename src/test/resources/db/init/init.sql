@@ -112,6 +112,12 @@ CREATE TABLE bond_securities_item_kind (
     name VARCHAR(100) NOT NULL -- 유가증권 종목 종류 코드 명칭
 );
 
+CREATE TABLE bond_option_type (
+    code VARCHAR(4) PRIMARY KEY NOT NULL, -- 채권 옵션 타입 코드
+    name VARCHAR(100) NOT NULL -- 채권 옵션 타입 코드 명칭
+);
+
+
 CREATE TABLE bond_issuer (
     code VARCHAR(13) PRIMARY KEY NOT NULL, -- 법인등록번호,
     name VARCHAR(100) NOT NULL, -- 채권 발행인 명칭
@@ -121,30 +127,32 @@ CREATE TABLE bond_issuer (
 );
 
 CREATE TABLE bond (
-    isin_code VARCHAR(12) PRIMARY KEY NOT NULL, -- 국제 채권 식별 번호 (ISIN 코드)
-    isin_code_name VARCHAR(100) NOT NULL, -- 국제 채권 식별 번호 명칭
-    issuer_code VARCHAR(13) NOT NULL, -- 발행인 법인등록번호
-    issue_date DATE NOT NULL, -- 채권 발행 일자
-    issue_format_name VARCHAR(100) NOT NULL, -- 채권 발행 형태 명칭
-    surface_interest_rate DECIMAL(15,10) NOT NULL, -- 채권 표면 이자율
-    expired_date DATE NOT NULL, -- 채권 만기 일자
-    securities_item_kind_code VARCHAR(4) NOT NULL, -- 유가증권 종목 종류 코드
-    interest_change_code CHAR(1) NOT NULL, -- 금리 변동 구분 코드
-    interest_type_code CHAR(1) NOT NULL, -- 채권 이자 유형 코드
-    issue_currency_code VARCHAR(3) NOT NULL, -- 채권 발행 통화 코드
-    price DECIMAL(15, 2),
-    priced_date DATE, -- 채권 가격 일자-- 채권 가격
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- 레코드 생성 시간
-    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL, -- 레코드 업데이트 시간,
-    FOREIGN KEY (securities_item_kind_code) REFERENCES bond_securities_item_kind(code),
-    FOREIGN KEY (interest_change_code) REFERENCES bond_interest_change(code),
-    FOREIGN KEY (interest_type_code) REFERENCES bond_interest_type(code),
-    FOREIGN KEY (issuer_code) REFERENCES bond_issuer(code)
+                      isin_code VARCHAR(12) PRIMARY KEY NOT NULL, -- 국제 채권 식별 번호 (ISIN 코드)
+                      isin_code_name VARCHAR(100) NOT NULL, -- 국제 채권 식별 번호 명칭
+                      issuer_code VARCHAR(13) NOT NULL, -- 발행인 법인등록번호
+                      issue_date DATE NOT NULL, -- 채권 발행 일자
+                      surface_interest_rate DECIMAL(15,10) NOT NULL, -- 채권 표면 이자율
+                      expired_date DATE NOT NULL, -- 채권 만기 일자
+                      interest_payment_cycle VARCHAR(10) NOT NULL, -- 이자 주급 주기
+                      option_type_code VARCHAR(4), -- 채권 옵션 타입 코드
+                      securities_item_kind_code VARCHAR(4) NOT NULL, -- 유가증권 종목 종류 코드
+                      interest_change_code CHAR(1) NOT NULL, -- 금리 변동 구분 코드
+                      interest_type_code CHAR(1) NOT NULL, -- 채권 이자 유형 코드
+                      issue_currency_code VARCHAR(3) NOT NULL, -- 채권 발행 통화 코드
+                      price DECIMAL(15, 2),
+                      priced_date DATE, -- 채권 가격 일자-- 채권 가격
+                      created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP NOT NULL, -- 레코드 생성 시간
+                      updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP NOT NULL, -- 레코드 업데이트 시간,
+                      FOREIGN KEY (securities_item_kind_code) REFERENCES bond_securities_item_kind(code),
+                      FOREIGN KEY (interest_change_code) REFERENCES bond_interest_change(code),
+                      FOREIGN KEY (interest_type_code) REFERENCES bond_interest_type(code),
+                      FOREIGN KEY (issuer_code) REFERENCES bond_issuer(code),
+                      FOREIGN KEY (option_type_code) REFERENCES bond_option_type(code)
 );
 
 CREATE TABLE bond_grade_rank (
     grade VARCHAR(5) not null, -- 기업 신용등급,
-    `rank` TINYINT not null, -- grade 별 랭킹
+    ranking TINYINT not null, -- grade 별 랭킹
     isin_code VARCHAR(12) PRIMARY KEY NOT NULL, -- 법인등록번호,
     isin_code_name VARCHAR(100) NOT NULL, -- 국제 채권 식별 번호 명칭
     surface_interest_rate DECIMAL(15,10) NOT NULL, -- 채권 표면 이자율

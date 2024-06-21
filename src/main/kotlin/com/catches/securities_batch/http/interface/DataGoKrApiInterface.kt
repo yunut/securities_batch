@@ -7,7 +7,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface DataGoKrApiInterface {
-    @GET("/1160100/service/GetBondTradInfoService/getIssuIssuItemStat")
+    @GET("/1160100/service/GetBondIssuInfoService/getBondBasiInfo")
     fun getBondInformation(
         @Query("ServiceKey") serviceKey: String,
         @Query("pageNo") pageNo: Int,

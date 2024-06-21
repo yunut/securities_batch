@@ -22,14 +22,18 @@ data class Bond(
     @Column(name = "issue_date", nullable = false)
     var issueDate: LocalDate,
 
-    @Column(name = "issue_format_name", length = 100, nullable = false)
-    var issueFormatName: String,
+    @Column(name = "interest_payment_cycle", length = 10)
+    var interestPaymentCycle: String,
 
     @Column(name = "surface_interest_rate", precision = 15, scale = 10, nullable = false)
     var surfaceInterestRate: BigDecimal,
 
     @Column(name = "expired_date", nullable = false)
     var expiredDate: LocalDate,
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "option_type_code")
+    var optionType: BondOptionType?,
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "securities_item_kind_code", nullable = false)
@@ -65,12 +69,13 @@ data class Bond(
             securitiesItemKind: BondSecuritiesItemKind,
             isinCode: String,
             isinCodeName: String,
-            issueFormatName: String,
+            interestPaymentCycle: String?,
             expiredDate: LocalDate,
             issueCurrencyCode: String,
             surfaceInterestRate: BigDecimal,
             interestChange: BondInterestChange,
-            interestType: BondInterestType
+            interestType: BondInterestType,
+            optionType: BondOptionType?,
         ): Bond {
             return Bond(
                 issuerCode = issuer,
@@ -78,7 +83,8 @@ data class Bond(
                 securitiesItemKind = securitiesItemKind,
                 isinCode = isinCode,
                 isinCodeName = isinCodeName,
-                issueFormatName = issueFormatName,
+                optionType = optionType,
+                interestPaymentCycle = interestPaymentCycle!!,
                 expiredDate = expiredDate,
                 issueCurrencyCode = issueCurrencyCode,
                 surfaceInterestRate = surfaceInterestRate,

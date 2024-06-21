@@ -12,17 +12,18 @@ class BatchScheduler(
     private val bondPriceJob: Job,
     private val bondGradeRankJob: Job
 ) {
-    @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽 2시에 실행
+//    @Scheduled(cron = "0 0 2 * * ?")  // 매일 새벽 2시에 실행
+    @Scheduled(fixedDelay = 100000)
     fun runBondInformationBatchJob() {
         executeBatchJob(bondInformationJob)
     }
 
-    @Scheduled(cron = "0 0 3 * * ?")
+//    @Scheduled(cron = "0 0 3 * * ?")
     fun runBondPriceBatchJob() {
         executeBatchJob(bondPriceJob)
     }
 
-    @Scheduled(cron = "0 0 4 * * ?")
+//    @Scheduled(cron = "0 0 4 * * ?")
     fun runBondGradeRankBatchJob() {
         executeBatchJob(bondGradeRankJob)
     }

@@ -32,7 +32,9 @@ class BondInformationItemReader(
                 numOfRows = rows,
                 resultType = "json",
                 basDt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-            ).execute().body()?.response?.body?.items?.item
+            ).execute().body()?.response?.body?.items?.item?.filter {
+                it.crno != "0000000000000" && it.bondOffrMcd != "21" && it.bondOffrMcd != "22"
+            }
         }
 
         return if (nextBondIndex < bondList!!.size) {
