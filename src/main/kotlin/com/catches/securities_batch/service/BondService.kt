@@ -7,10 +7,12 @@ import com.catches.securities_batch.repository.*
 import com.catches.securities_batch.repository.entity.*
 import jakarta.transaction.Transactional
 import org.springframework.beans.factory.annotation.Qualifier
+import org.springframework.dao.DataIntegrityViolationException
 import org.springframework.stereotype.Service
 import java.math.BigDecimal
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+import kotlin.random.Random
 
 @Service
 class BondService(
@@ -20,78 +22,71 @@ class BondService(
     private val bondInterestChangeRepository: BondInterestChangeRepository,
     private val bondInterestTypeRepository: BondInterestTypeRepository,
     private val bondSecuritiesItemKindRepository: BondSecuritiesItemKindRepository,
+    private val bondPriceHistoryRepository: BondPriceHistoryRepository,
+    private val bondOptionTypeRepository: BondOptionTypeRepository,
     private val httpProperty: HttpProperty
 ) {
     val formatter = DateTimeFormatter.ofPattern("yyyyMMdd")
-    fun getBondInformation(pageNo: Int, rows: Int) {
-        val temp = dataGoKrApiInterface.getBondInformation(
-            serviceKey = httpProperty.dataGoKr.key,
-            pageNo = pageNo,
-            numOfRows = rows,
-            resultType = "json",
-            basDt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-        ).execute().body()
 
-        temp?.response?.body?.items?.item?.forEach {
-            val bond = bondRepository.findBondByIsinCode(it.isinCd)
-            bond ?: saveBondInformation(it)
-        }
+    fun generateRandom12DigitNumber(): String {
+        val randomNumber = Random.nextLong(100_000_000_000L, 999_999_999_999L).toString().padStart(12, '0')  // 12자리로 보장
+        return "N$randomNumber"
     }
 
-    fun getBondPrice(pageNo: Int, rows: Int) {
-        val temp = dataGoKrApiInterface.getBondPrice(
-            serviceKey = httpProperty.dataGoKr.key,
-            pageNo = pageNo,
-            numOfRows = rows,
-            resultType = "json",
-            beginBasDt = "20240101"
-        ).execute().body()
-
-        temp?.response?.body?.items?.item?.forEach {
-            val bond = bondRepository.findBondByIsinCode(it.isinCd)
-            val pricedDate = LocalDate.parse(it.basDt, formatter)
-
-            bond?.let { item ->
-                if (item.pricedDate == null || item.pricedDate!!.isBefore(pricedDate)) {
-                    bondRepository.updateBondPrice(isinCode = it.isinCd, price = it.clprPrc, pricedDate = pricedDate)
-                }
+    @Transactional
+    fun saveBondPriceHistory(bondPriceHistoryList: List<BondPriceHistory>) {
+        bondPriceHistoryList.forEach {
+            try {
+                bondPriceHistoryRepository.save(it)
+            } catch (e: DataIntegrityViolationException) {
+                println("Data integrity violation for code: ${it.code} and date: ${it.pricedDate}")
+            } catch (e: Exception) {
+                println("Error upserting bond price history for code: ${it.code} and date: ${it.pricedDate}: ${e.message}")
             }
         }
+
     }
 
-    fun saveBondInformation(bondItem: BondInformationDto) {
+    fun saveBondInformation(bondItem: BondInformationDto): Bond {
+        val crno = if(bondItem.crno == "") generateRandom12DigitNumber() else bondItem.crno
         val issuer = bondIssuerRepository.findBondIssuerByName(bondItem.bondIsurNm)
-            ?: BondIssuer(bondItem.bondIsurNm, bondItem.crno).apply {
+            ?: BondIssuer(crno, bondItem.bondIsurNm, null).apply {
                 bondIssuerRepository.save(this)
             }
-        val change = bondInterestChangeRepository.findBondInterestChangeByCode(bondItem.irtChngDcd)
-            ?: BondInterestChange(bondItem.irtChngDcd, bondItem.irtChngDcdNm).apply {
+
+        val irtChngDcdNm = bondItem.irtChngDcdNm!!.split("-")[0]
+        val change = bondInterestChangeRepository.findBondInterestChangeByName(irtChngDcdNm)
+            ?: BondInterestChange(bondItem.irtChngDcd!!, irtChngDcdNm).apply {
                 bondInterestChangeRepository.save(this)
             }
-        val type = bondInterestTypeRepository.findBondInterestTypeByCode(bondItem.bondIntTcd)
+        val type = bondInterestTypeRepository.findBondInterestTypeByCode(bondItem.bondIntTcd!!)
             ?: BondInterestType(bondItem.bondIntTcd, bondItem.bondIntTcdNm).apply {
                 bondInterestTypeRepository.save(this)
             }
-        val kind = bondSecuritiesItemKindRepository.findBondSecuritiesItemKindByCode(bondItem.scrsItmsKcd)
+        val kind = bondSecuritiesItemKindRepository.findBondSecuritiesItemKindByCode(bondItem.scrsItmsKcd!!)
             ?: BondSecuritiesItemKind(bondItem.scrsItmsKcd, bondItem.scrsItmsKcdNm).apply {
                 bondSecuritiesItemKindRepository.save(this)
             }
+        val optionType = bondItem.optnTcdNm?.let { optnTcdNm ->
+            bondOptionTypeRepository.findBondOptionTypeByName(optnTcdNm)
+                ?: BondOptionType(bondItem.optnTcd, optnTcdNm).apply {
+                    bondOptionTypeRepository.save(this)
+                }
+        }
 
-        bondRepository.save(
-            Bond.toBond(
-                crno = bondItem.crno,
-                issuer = issuer,
-                issueDate = LocalDate.parse(bondItem.bondIssuDt, formatter),
-                securitiesItemKind = kind,
-                isinCode = bondItem.isinCd,
-                isinCodeName = bondItem.isinCdNm.trim(),
-                issueFormatName = bondItem.bondIssuFrmtNm,
-                expiredDate = LocalDate.parse(bondItem.bondExprDt, formatter),
-                issueCurrencyCode = bondItem.bondIssuCurCd,
-                surfaceInterestRate = bondItem.bondSrfcInrt.toBigDecimal(),
-                interestChange = change,
-                interestType = type
-            )
+        return Bond.toBond(
+            issuer = issuer,
+            issueDate = LocalDate.parse(bondItem.bondIssuDt, formatter),
+            securitiesItemKind = kind,
+            isinCode = bondItem.isinCd!!,
+            isinCodeName = bondItem.isinCdNm!!.replace(" ", ""),
+            expiredDate = LocalDate.parse(bondItem.bondExprDt, formatter),
+            issueCurrencyCode = bondItem.bondIssuCurCd!!,
+            surfaceInterestRate = bondItem.bondSrfcInrt!!.toBigDecimal(),
+            interestChange = change,
+            interestType = type,
+            interestPaymentCycle = bondItem.intPayCyclCtt,
+            optionType = optionType
         )
     }
 }

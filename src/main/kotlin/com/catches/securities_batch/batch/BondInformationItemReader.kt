@@ -8,7 +8,7 @@ import org.springframework.beans.factory.annotation.Qualifier
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 
-class BondItemReader(
+class BondInformationItemReader(
     @Qualifier("DataGoKrApiInterface") private val dataGoKrApiInterface: DataGoKrApiInterface,
     private val httpProperty: HttpProperty
 ) : ItemReader<BondInformationDto> {
@@ -29,10 +29,12 @@ class BondItemReader(
             bondList = dataGoKrApiInterface.getBondInformation(
                 serviceKey = httpProperty.dataGoKr.key,
                 pageNo = 1,
-                numOfRows = 1000,
+                numOfRows = rows,
                 resultType = "json",
                 basDt = LocalDate.now().format(DateTimeFormatter.ofPattern("yyyyMMdd"))
-            ).execute().body()?.response?.body?.items?.item
+            ).execute().body()?.response?.body?.items?.item?.filter {
+                it.crno != "0000000000000" && it.bondOffrMcd != "21" && it.bondOffrMcd != "22"
+            }
         }
 
         return if (nextBondIndex < bondList!!.size) {
