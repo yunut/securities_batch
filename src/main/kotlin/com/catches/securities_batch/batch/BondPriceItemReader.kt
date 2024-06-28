@@ -25,7 +25,7 @@ class BondPriceItemReader(
                 pageNo = 1,
                 numOfRows = 1,
                 resultType = "json",
-                beginBasDt = LocalDate.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                beginBasDt = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"))
             ).execute().body()?.response?.body?.totalCount ?: 10000
 
             bondPriceList = dataGoKrApiInterface.getBondPrice(
@@ -33,7 +33,7 @@ class BondPriceItemReader(
                 pageNo = 1,
                 numOfRows = rows,
                 resultType = "json",
-                beginBasDt = LocalDate.now().minusMonths(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"))
+                beginBasDt = LocalDate.now().minusYears(1).format(DateTimeFormatter.ofPattern("yyyyMMdd"))
             ).execute().body()?.response?.body?.items?.item
         }
 
